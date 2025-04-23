@@ -5,6 +5,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo'
 import { RestaurantsModule } from './restaurants/restaurants.module'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { ConfigModule } from '@nestjs/config'
+import { Restaurant } from './restaurants/entities/restaurant.entity'
 
 @Module({
   imports: [
@@ -29,8 +30,9 @@ import { ConfigModule } from '@nestjs/config'
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: 'db.sqlite',
-      synchronize: true,
+      synchronize: process.env.NODE_ENV !== 'prod',
       logging: true,
+      entities: [Restaurant],
     }),
     RestaurantsModule,
   ],
