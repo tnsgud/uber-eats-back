@@ -20,16 +20,16 @@ import { User } from './users/entities/user.entity'
         NODE_ENV: Joi.string().valid('dev', 'prod'),
       }),
     }),
-    // GraphQLModule.forRoot<ApolloDriverConfig>({
-    //   driver: ApolloDriver,
-    //   autoSchemaFile: true,
-    // just for develop
-    // playground: {
-    //  settings: {
-    //   'request.credentials': 'same-origin',
-    //},
-    //},
-    //}),
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      autoSchemaFile: true,
+      // just for develop
+      playground: {
+        settings: {
+          'request.credentials': 'same-origin',
+        },
+      },
+    }),
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: 'db.sqlite',
