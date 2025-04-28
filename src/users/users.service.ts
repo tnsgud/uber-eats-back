@@ -7,12 +7,17 @@ import {
   CreateAccountOutput,
 } from './dto/create-account.dto'
 import { LoginInput, LoginOutput } from './dto/login.dto'
+import * as jwt from 'jsonwebtoken'
+import { ConfigService } from '@nestjs/config'
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private readonly users: Repository<User>,
-  ) {}
+    private readonly config: ConfigService,
+  ) {
+    console.log(config.get('SECRET_KEY'))
+  }
 
   async createAccount({
     email,
@@ -65,6 +70,9 @@ export class UsersService {
         output.error = 'Wrong password'
         return output
       }
+
+      // create token
+      const token = jwt.sign({ id: user.id }, this.config.get('SECRET_KEY'))
 
       // change output data for success
       output.ok = true
