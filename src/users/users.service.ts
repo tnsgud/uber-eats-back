@@ -19,17 +19,27 @@ export class UsersService {
     password,
     role,
   }: CreateAccountInput): Promise<CreateAccountOutput> {
+    const output: CreateAccountOutput = {
+      ok: false,
+    }
     try {
+      // check exists email
       const exists = await this.users.findOne({ where: { email } })
 
-      if (exists)
-        return { ok: false, error: 'There is a user with that email already' }
+      if (exists) {
+        output.error = 'There is a user with that email already'
+        return output
+      }
 
+      // create `user` data and save
       await this.users.save(this.users.create({ email, password, role }))
-      return { ok: true }
+
+      output.ok = true
+      return output
     } catch (error) {
       console.log(error)
-      return { ok: false, error: `Couldn't create account ${error}` }
+      output.error = error
+      return output
     }
   }
 
@@ -56,8 +66,7 @@ export class UsersService {
         return output
       }
 
-      // change `ok` to true
-      // add `token` value
+      // change output data for success
       output.ok = true
       output.token = 'lalalalala'
 
