@@ -38,4 +38,7 @@ export class UsersResolver {
       console.log(error)
     }
   }
+
+  @Query(() => User)
+  me() {}
 }
