@@ -12,4 +12,7 @@ export class JwtService {
   sign(payload: object): string {
     return jwt.sign(payload, this.options.secretKey)
   }
+  verify(token: string) {
+    return jwt.verify(token, this.options.secretKey)
+  }
 }
