@@ -7,11 +7,14 @@ import {
   CreateAccountOutput,
 } from './dto/create-account.dto'
 import { LoginInput, LoginOutput } from './dto/login.dto'
+import { JwtService } from 'src/jwt/jwt.service'
+import { EditProfileInput } from './dto/edit-profile.dto'
 
 @Injectable()
-export class UsersService {
+export class UserService {
   constructor(
     @InjectRepository(User) private readonly users: Repository<User>,
+    private readonly jwtService: JwtService,
   ) {}
 
   async createAccount({
@@ -66,9 +69,12 @@ export class UsersService {
         return output
       }
 
+      // create token
+      const token = this.jwtService.sign({ id: user.id })
+
       // change output data for success
       output.ok = true
-      output.token = 'lalalalala'
+      output.token = token
 
       return output
     } catch (error) {
@@ -76,5 +82,23 @@ export class UsersService {
       output.error = error
       return output
     }
+  }
+
+  async findById(id: number): Promise<User> {
+    return this.users.findOne({ where: { id } })
+  }
+
+  async editProfile(userId: number, { email, password }: EditProfileInput) {
+    const user = await this.users.findOne({ where: { id: userId } })
+
+    if (email) {
+      user.email = email
+    }
+
+    if (password) {
+      user.password = password
+    }
+
+    return this.users.save(user)
   }
 }
