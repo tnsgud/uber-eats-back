@@ -9,15 +9,12 @@ import { LoginInput, LoginOutput } from './dto/login.dto'
 import { UseGuards } from '@nestjs/common'
 import { AuthGuard } from 'src/auth/auth.guard'
 import { AuthUser } from 'src/auth/auth-user.decorator'
+import { UserProfileInput, userProfileOutput } from './dto/user-profile.dto'
+import { EditProfileInput, EditProfileOutput } from './dto/edit-profile.dto'
 
 @Resolver(() => User)
 export class UserResolver {
   constructor(private readonly userService: UserService) {}
-
-  @Query(() => Boolean)
-  hi() {
-    return true
-  }
 
   @Mutation(() => CreateAccountOutput)
   async createAccount(
@@ -46,5 +43,45 @@ export class UserResolver {
   @UseGuards(AuthGuard)
   me(@AuthUser() authUser) {
     return authUser
+  }
+
+  @Query(() => userProfileOutput)
+  @UseGuards(AuthGuard)
+  async userProfile(
+    @Args() UserProfileInput: UserProfileInput,
+  ): Promise<userProfileOutput> {
+    const output: userProfileOutput = {
+      ok: false,
+    }
+    try {
+      const user = await this.userService.findById(UserProfileInput.userId)
+
+      if (!user) throw Error()
+
+      output.ok = true
+      output.user = user
+    } catch (error) {
+      output.error = error
+    }
+
+    return output
+  }
+
+  @UseGuards(AuthGuard)
+  @Mutation(() => EditProfileOutput)
+  async editProfile(
+    @AuthUser() authUser: User,
+    @Args('input') editProfileInput: EditProfileInput,
+  ): Promise<EditProfileOutput> {
+    const output: EditProfileOutput = { ok: false }
+    try {
+      await this.userService.editProfile(authUser.id, editProfileInput)
+
+      output.ok = true
+    } catch (error) {
+      output.error = error
+    }
+
+    return output
   }
 }
