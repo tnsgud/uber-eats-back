@@ -9,11 +9,12 @@ import { GraphQLModule } from '@nestjs/graphql'
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { ConfigModule } from '@nestjs/config'
-import { UsersModule } from './user/user.module'
+import { UserModule } from './user/user.module'
 import { CommonModule } from './common/common.module'
 import { User } from './user/entities/user.entity'
 import { JwtModule } from './jwt/jwt.module'
 import { JwtMiddleware } from './jwt/jwt.middleware'
+import { AuthModule } from './auth/auth.module'
 
 @Module({
   imports: [
@@ -35,6 +36,9 @@ import { JwtMiddleware } from './jwt/jwt.middleware'
           'request.credentials': 'same-origin',
         },
       },
+      context: ({ req }) => ({
+        user: req['user'],
+      }),
     }),
     TypeOrmModule.forRoot({
       type: 'sqlite',
@@ -46,8 +50,8 @@ import { JwtMiddleware } from './jwt/jwt.middleware'
     JwtModule.forRoot({
       secretKey: process.env.SECRET_KEY,
     }),
-    UsersModule,
-    CommonModule,
+    UserModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],

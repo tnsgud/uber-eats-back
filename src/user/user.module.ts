@@ -9,4 +9,4 @@ import { User } from './entities/user.entity'
   providers: [UserResolver, UserService],
   exports: [UserService],
 })
-export class UsersModule {}
+export class UserModule {}
